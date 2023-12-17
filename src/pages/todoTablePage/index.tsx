@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import { IToDosListState, IUserListState, IUserToDosArray} from "../../shared/types/types.ts";
+import {IToDosList, IToDosListState, IUserListState, IUserToDosArray} from "../../shared/types/types.ts";
 import getToDos from "../../shared/api/getToDos";
 import getUsers from "../../shared/api/getUsers";
 import styles from "./todoTablePage.module.css"
@@ -20,7 +20,6 @@ export function TodoTablePage() {
             isLoading: true
         }
     );
-
     useEffect(() => {
         Promise.all([getUsers(), getToDos()])
             .then(([users, toDos]) => {
@@ -46,16 +45,17 @@ export function TodoTablePage() {
         const userToDo = toDosList.list.filter(todo => {
             return todo.userId == userID
         })
+        const getRequiredProperties = (toDo: IToDosList) => {
+            return {title: toDo.title, userId: toDo.userId, completed: toDo.completed, id: toDo.id}
+        }
         return {
             name: userName,
             ID: userID,
-            userToDosUncomplete: userToDo.filter(todo => !todo.completed).map((todo) => (
-                {userId: todo.userId, completed: todo.completed, id: todo.id})),
-            usersToDosComplete: userToDo.map(todo => (
-                {userId: todo.userId, completed: todo.completed, id: todo.id}
-            ))
+            userToDosUncomplete: userToDo.filter(todo => !todo.completed).map((todo) => getRequiredProperties(todo)),
+            usersToDosComplete: userToDo.map((todo) => getRequiredProperties(todo))
         }
     }
+
     const getUserToDosArray = (usersList: IUserListState) => {
         const userToDosArray: Array<IUserToDosArray> = [];
         usersList.list.forEach(user => {
@@ -64,7 +64,6 @@ export function TodoTablePage() {
         });
         return userToDosArray;
     }
-
     return (
         <section className={styles.table__container}>
             {usersList.isLoading && toDosList.isLoading ? <p>Загружаю данные</p> : <table className={styles.table__tab}>
@@ -78,7 +77,8 @@ export function TodoTablePage() {
                 </thead>
                 <tbody>
                 {getUserToDosArray(usersList).map((user) => (
-                    <tr>
+                    ///элементы в функции пушаться в конец массива, поэтому, на мой взля, допустимо использовать index
+                    <tr key={user.ID}>
                         <td className={styles.table__tab}>
                             {user.name}
                         </td>
@@ -95,9 +95,9 @@ export function TodoTablePage() {
             </table>}
             <p>p.s. сделал 3 столбца т.к. нет связи, чтобы спросить о том какой каунт todo выводить: выполненные или
                 все</p>
-            <p>p.s. №2 На всякий случай добавил обработчик ошибок с переадресацией на заглушку ошибки и вынес логику из App</p>
+            <p>p.s. №2 На всякий случай добавил обработчик ошибок с переадресацией на заглушку ошибки и вынес логику из
+                App</p>
         </section>
     );
 }
-
 export default TodoTablePage;

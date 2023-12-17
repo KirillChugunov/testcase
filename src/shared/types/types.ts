@@ -18,6 +18,7 @@ export interface IToDosList {
     completed: boolean
     id: number
     userId: number
+    title: string
 }
 export interface IToDosListState {
     list: Array<IToDosList>,
