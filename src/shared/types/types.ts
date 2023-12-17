@@ -2,6 +2,13 @@ export interface IErrorState {
     isError: boolean,
     errorCode: number | string
 }
+
+export interface  IUserToDosArray {
+    name: string,
+    ID: number,
+    userToDosUncomplete: Array<IToDosList>
+    usersToDosComplete: Array<IToDosList>
+}
 export interface IUserList {
     id: number
     name: string
@@ -10,7 +17,6 @@ export interface IUserList {
 export interface IToDosList {
     completed: boolean
     id: number
-    title: string
     userId: number
 }
 export interface IToDosListState {
